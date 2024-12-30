@@ -32,9 +32,9 @@ controls.mouseButtons = {
 };
 
 //Texture loading
-const loader = new THREE.TextureLoader();
-const stoneTexture = loader.load( "Stone.jpg" );
-const dirtTexture = loader.load( "Dirt.jpg" );
+// const loader = new THREE.TextureLoader();
+// const stoneTexture = loader.load( "Stone.jpg" );
+// const dirtTexture = loader.load( "Dirt.jpg" );
 
 camera.position.x = 0;
 camera.position.y = 5;
@@ -227,10 +227,10 @@ class Game {
 					let s = this.levels[this.level].layers[z][y][x];
 
 					if (s === "b") {
-						blocks.add(x, y, z, 1, 1, 1, { color: 0xDDDDDD, map: dirtTexture });
+						blocks.add(x, y, z, 1, 1, 1, { color: 0x999999 });
 					}
 					if (s === "P") {
-						players.add(x, y, z, 1, 1, 1, { color: 0xDDDDDD, map: stoneTexture });
+						players.add(x, y, z, 1, 1, 1, { color: 0xDDDDDD });
 					}
 				}
 			}
@@ -244,9 +244,23 @@ class Game {
 	}
 
 	apply () {
+		camera.position.x = players[0].x;
+		camera.position.y = players[0].y + 3;
+		camera.position.z = players[0].z + 5;
 		camera.lookAt(new THREE.Vector3(players[0].x, players[0].y, players[0].z));
 
 		players.apply(blocks);
+
+		for (let i = 0; i < players.length; i++) {
+			if (players[i].y < -20) players[i].dead = true;
+			if (players[i].dead) {
+				objects.remove();
+				this.loadMap();
+				this.init(blocks);
+				this.init(players);
+				players[i].dead = false;
+			}
+		}
 	}
 
 }
@@ -258,8 +272,6 @@ game.init(blocks);
 game.init(players);
 
 function animate () {
-
-	//player.update(blocks);
 
 	game.apply();
 
