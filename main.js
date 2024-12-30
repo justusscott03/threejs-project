@@ -260,7 +260,7 @@ class Game {
 					let s = this.levels[this.level].layers[z][y][x];
 
 					if (s === "b") {
-						blocks.add(x, y, z, 1, 1, 1, { color: 0x999999 });
+						blocks.add(x, y, z, 1, 1, 1, { color: 0x777777 });
 					}
 					if (s === "P") {
 						players.add(x, y, z, 1, 1, 1, { color: 0xDDDDDD });
