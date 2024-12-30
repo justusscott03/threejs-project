@@ -1,44 +1,41 @@
 //Import everything
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+
+/*
+let controllers = [], pControllers = [];
+function getControllers () {
+    return window.navigator.webkitGetGamepads ? window.navigator.webkitGetGamepads() : window.navigator.getGamepads();
+}
+function checkControllers () {
+    for (let i = 0; i < controllers.length; i++) {
+        if (controllers[i] && !pControllers[i]) {
+            alert(controllers[i].id + " connected as Controller " + (i + 1));
+        }
+        else if (!controllers[i] && pControllers[i]) {
+            alert("Controller " + (i + 1) + " disconnected.");
+        }
+    }
+}
+	*/
 
 //Scene and camera
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 //Direction light
-const light = new THREE.DirectionalLight( 0xFFFFFF, 3 );
-light.position.set( -1, 1, 2 );
-scene.add( light );
+const light = new THREE.DirectionalLight(0xFFFFFF, 3);
+light.position.set(-1, 1, 2);
+scene.add(light);
 
 //Hemisphere light
-const ceilLight = new THREE.HemisphereLight( 0xFFFFFF, 0xBBBBFF, 0.3 );
-scene.add( ceilLight );
+const ceilLight = new THREE.HemisphereLight(0xFFFFFF, 0xBBBBFF, 0.3);
+scene.add(ceilLight);
 
 //Renderer
-const renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
-renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setAnimationLoop( animate );
-document.body.appendChild( renderer.domElement );
-
-//Controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.mouseButtons = {
-	LEFT: THREE.MOUSE.ROTATE,
-	MIDDLE: THREE.MOUSE.DOLLY,
-	RIGHT: THREE.MOUSE.ROTATE
-};
-
-//Texture loading
-// const loader = new THREE.TextureLoader();
-// const stoneTexture = loader.load( "Stone.jpg" );
-// const dirtTexture = loader.load( "Dirt.jpg" );
-
-camera.position.x = 0;
-camera.position.y = 5;
-camera.position.z = 5;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setAnimationLoop(animate);
+document.body.appendChild(renderer.domElement);
 
 var keys = [];
 window.addEventListener("keydown", (e) => {
@@ -86,6 +83,16 @@ class Player extends Block {
 	constructor (x, y, z, w, h, d, m) {
 		super(x, y, z, w, h, d, m);
 
+		/*
+		this.k = 0;
+
+		this.u = false;
+		this.f = false;
+		this.b = false;
+		this.l = false;
+		this.r = false;
+		*/
+
 		this.velx = 0;
 		this.vely = 0;
 		this.velz = 0;
@@ -113,6 +120,32 @@ class Player extends Block {
 
 			if (!keys[65] && !keys[68])	this.velx = 0;
 			if (!keys[87] && !keys[83])	this.velz = 0;
+
+			if (this.velx > this.maxSpeed) this.velx = this.maxSpeed;
+			if (this.velx < -this.maxSpeed) this.velx = -this.maxSpeed;
+			if (this.velz > this.maxSpeed) this.velz = this.maxSpeed;
+			if (this.velz < -this.maxSpeed) this.velz = -this.maxSpeed;
+
+			/*
+			this.u = (controllers[this.k].buttons[1] && controllers[this.k].buttons[1].pressed);
+			this.f = (controllers[this.k].axes[1] && controllers[this.k].axes[1] < -0.5);
+			this.b = (controllers[this.k].axes[1] && controllers[this.k].axes[1] > 0.5);
+			this.l = (controllers[this.k].axes[0] && controllers[this.k].axes[0] < -0.5);
+			this.r = (controllers[this.k].axes[0] && controllers[this.k].axes[0] > 0.5);
+
+			if (this.u && !this.falling) {
+				this.falling = true;
+				this.vely = -this.jumpHeight;
+			}
+
+			if (this.l) this.velx = -this.maxSpeed;
+			if (this.f) this.velz = -this.maxSpeed;
+			if (this.r) this.velx = this.maxSpeed;
+			if (this.b) this.velz = this.maxSpeed;
+
+			if (!this.l && !this.r)	this.velx = 0;
+			if (!this.f && !this.b)	this.velz = 0;
+			*/
 
 			if (this.velx > this.maxSpeed) this.velx = this.maxSpeed;
 			if (this.velx < -this.maxSpeed) this.velx = -this.maxSpeed;
@@ -271,7 +304,16 @@ game.loadMap();
 game.init(blocks);
 game.init(players);
 
+// let clicked = false;
+// window.addEventListener("mousedown", (e) => {
+// 	clicked = true;
+// });
+
 function animate () {
+
+	// pControllers = controllers;
+	// controllers = getControllers();
+	// checkControllers();
 
 	game.apply();
 
