@@ -39,7 +39,7 @@ document.body.appendChild(renderer.domElement);
 
 //Textures
 const textureLoader = new THREE.TextureLoader();
-const dirt = textureLoader.load("dirt.jpg");
+const dirt = textureLoader.load("https://cdn.jsdelivr.net/gh/justusscott03/threejs-project@v0.1.1/dirt.jpg");
 const stone = textureLoader.load("stone.jpg");
 const grassSide = textureLoader.load("grass-side.jpg");
 const grassTop = textureLoader.load("grass-top.jpg");
