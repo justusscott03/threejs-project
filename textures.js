@@ -1,0 +1,1 @@
+import { color, fill, stroke, background, textAlign, text, rect } from "./math.js"

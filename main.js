@@ -16,7 +16,7 @@ function checkControllers () {
         }
     }
 }
-	*/
+*/
 
 //Scene and camera
 const scene = new THREE.Scene();
@@ -36,6 +36,12 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
+
+const textureLoader = new THREE.TextureLoader();
+const dirt = textureLoader.load("dirt.jpg");
+const stone = textureLoader.load("stone.jpg");
+const grassSide = textureLoader.load("grass-side.jpg");
+const grassTop = textureLoader.load("grass-top.jpg");
 
 var keys = [];
 window.addEventListener("keydown", (e) => {
@@ -65,7 +71,7 @@ class Block {
 
 	init () {
 		this.geometry = new THREE.BoxGeometry(this.w, this.h, this.d);
-		this.material = new THREE.MeshStandardMaterial(this.m);
+		this.material = this.m;
 		this.cube = new THREE.Mesh(this.geometry, this.material);
 		this.cube.position.set(this.x, this.y, this.z);
 		scene.add(this.cube);
@@ -75,7 +81,7 @@ class Block {
 
 var blocks = [];
 blocks.add = function (x, y, z, w, h, d, m) {
-	this.push(new Block(x, y, z, w, h, d, m))
+	this.push(new Block(x, y, z, w, h, d, m));
 };
 
 class Player extends Block {
@@ -99,8 +105,8 @@ class Player extends Block {
 		this.maxSpeed = 0.1;
 
 		this.falling = false;
-		this.jumpHeight = 0.4;
-		this.gravity = 0.025;
+		this.jumpHeight = 0.3;
+		this.gravity = 0.015;
 		
 		this.health = 100;
 		this.dead = false;
@@ -260,10 +266,17 @@ class Game {
 					let s = this.levels[this.level].layers[z][y][x];
 
 					if (s === "b") {
-						blocks.add(x, y, z, 1, 1, 1, { color: 0x777777 });
+						blocks.add(x, y, z, 1, 1, 1, new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: dirt }));
 					}
 					if (s === "P") {
-						players.add(x, y, z, 1, 1, 1, { color: 0xDDDDDD });
+						players.add(x, y, z, 1, 1, 1, [
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassSide }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassSide }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassTop }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: dirt }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassSide }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassSide })
+						]);
 					}
 				}
 			}
@@ -303,11 +316,6 @@ var game = new Game();
 game.loadMap();
 game.init(blocks);
 game.init(players);
-
-// let clicked = false;
-// window.addEventListener("mousedown", (e) => {
-// 	clicked = true;
-// });
 
 function animate () {
 
