@@ -37,6 +37,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
 
+//Textures
 const textureLoader = new THREE.TextureLoader();
 const dirt = textureLoader.load("dirt.jpg");
 const stone = textureLoader.load("stone.jpg");
