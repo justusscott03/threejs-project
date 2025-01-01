@@ -235,23 +235,23 @@ class Game {
 			{
 				layers: [
 					[
-						"bbbb",
-						"bbbb",
-						"bbb ",
-						"bb  ",
-						"b   "
+						"ddddss",
+						"ddddss",
+						"ddd   ",
+						"dd   s",
+						"d     "
 					],
 					[
-						"bbbb",
-						"    "
+						"ddddss",
+						"     s"
 					],
 					[
-						" b  ",
-						" P  "
+						" d s s",
+						" P    "
 					],
 					[
-						"bbbb",
-						"    "
+						"dddds ",
+						"  ss  "
 					]
 				]
 			}
@@ -265,8 +265,11 @@ class Game {
 				for (let x = 0; x < this.levels[this.level].layers[z][y].length; x++) {
 					let s = this.levels[this.level].layers[z][y][x];
 
-					if (s === "b") {
+					if (s === "d") {
 						blocks.add(x, y, z, 1, 1, 1, new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: dirt }));
+					}
+					if (s === "s") {
+						blocks.add(x, y, z, 1, 1, 1, new THREE.MeshStandardMaterial({ map: stone }));
 					}
 					if (s === "P") {
 						players.add(x, y, z, 1, 1, 1, [
