@@ -43,6 +43,9 @@ const dirt = textureLoader.load("https://cdn.jsdelivr.net/gh/justusscott03/three
 const stone = textureLoader.load("stone.jpg");
 const grassSide = textureLoader.load("grass-side.jpg");
 const grassTop = textureLoader.load("grass-top.jpg");
+const TNTSide = textureLoader.load("tnt-side.jpg");
+const TNTTop = textureLoader.load("tnt-top.jpg");
+const oakPlanks = textureLoader.load("oak-planks.jpg");
 
 var keys = [];
 window.addEventListener("keydown", (e) => {
@@ -220,7 +223,51 @@ players.apply = function (blocks) {
 	}
 };
 
-var objects = [blocks, players];
+let fadeScreen = document.createElement("div");
+fadeScreen.style = "position: absolute; left: 0px; top: 0px; background-color: rgb(255, 255, 255); width: 100%; height: 100%; opacity: 100%; zIndex: 100;"
+fadeScreen.setAttribute("id", "level-trans");
+document.body.appendChild(fadeScreen);
+
+let fade = 0;
+class Portal extends Block {
+
+	constructor (x, y, z, w, h, d, m) {
+		super(x, y, z, w, h, d, m);
+
+		this.complete = false;
+	}
+
+	update (players) {
+		let screen = document.getElementById("level-trans");
+		for (let i = 0; i < players.length; i++) {
+			if (collide(this, players[i]) && !this.complete) {
+				screen.style.backgroundColor = "rgb(255, 255, 255);";
+				fade += 1;
+			}
+			if (fade >= 0 && !collide(this, players[i]) && !this.complete) {
+				fade -= 1;
+			}
+			if (fade > 100) {
+				this.complete = true;
+			}
+		}
+		screen.style.opacity = fade;
+	}
+
+}
+
+var portals = [];
+portals.add = function (x, y, z, w, h, d, m) {
+	this.push(new Portal(x, y, z, w, h, d, m));
+};
+portals.apply = function (players) {
+	for (let i = 0; i < this.length; i++) {
+		this[i].update(players);
+	}
+};
+
+
+var objects = [blocks, players, portals];
 objects.remove = function () {
     for (var i = 0; i < objects.length; i++) {
         for (var j = 0; j < objects[i].length; j++) {
@@ -237,23 +284,38 @@ class Game {
 				layers: [
 					[
 						"ddddss",
-						"ddddss",
-						"ddd   ",
-						"dd   s",
-						"d     "
+						"dddgss",
+						"ddg !s",
+						"dg   s",
+						"g     "
 					],
 					[
-						"ddddss",
+						"ggggss",
 						"     s"
 					],
 					[
-						" d s s",
+						" gssss",
 						" P    "
 					],
 					[
-						"dddds ",
+						"ggggs ",
 						"  ss  "
-					]
+					],
+					[
+						"gggggg"
+					],
+					[
+						"gggggg"
+					],
+					[
+						"gggggg"
+					],
+					[
+						"gggggg"
+					],
+					[
+						"gggggg"
+					],
 				]
 			}
 		];
@@ -269,11 +331,8 @@ class Game {
 					if (s === "d") {
 						blocks.add(x, y, z, 1, 1, 1, new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: dirt }));
 					}
-					if (s === "s") {
-						blocks.add(x, y, z, 1, 1, 1, new THREE.MeshStandardMaterial({ map: stone }));
-					}
-					if (s === "P") {
-						players.add(x, y, z, 1, 1, 1, [
+					if (s === "g") {
+						blocks.add(x, y, z, 1, 1, 1, [
 							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassSide }),
 							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassSide }),
 							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassTop }),
@@ -281,6 +340,25 @@ class Game {
 							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassSide }),
 							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: grassSide })
 						]);
+					}
+					if (s === "s") {
+						blocks.add(x, y, z, 1, 1, 1, new THREE.MeshStandardMaterial({ map: stone }));
+					}
+					if (s === "o") {
+						blocks.add(x, y, z, 1, 1, 1, new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: oakPlanks }))
+					}
+					if (s === "P") {
+						players.add(x, y, z, 1, 1, 1, [
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: TNTSide }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: TNTSide }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: TNTTop }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: TNTTop }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: TNTSide }),
+							new THREE.MeshStandardMaterial({ color: 0xDDDDDD, map: TNTSide })
+						]);
+					}
+					if (s === "!") {
+						portals.add(x, y, z, 1, 1, 1, new THREE.MeshStandardMaterial({ color: 0xFF8855 }));
 					}
 				}
 			}
@@ -295,11 +373,12 @@ class Game {
 
 	apply () {
 		camera.position.x = players[0].x;
-		camera.position.y = players[0].y + 3;
+		camera.position.y = players[0].y + 4;
 		camera.position.z = players[0].z + 5;
 		camera.lookAt(new THREE.Vector3(players[0].x, players[0].y, players[0].z));
 
 		players.apply(blocks);
+		portals.apply(players);
 
 		for (let i = 0; i < players.length; i++) {
 			if (players[i].y < -20) players[i].dead = true;
@@ -308,6 +387,7 @@ class Game {
 				this.loadMap();
 				this.init(blocks);
 				this.init(players);
+				this.init(portals);
 				players[i].dead = false;
 			}
 		}
@@ -320,6 +400,14 @@ var game = new Game();
 game.loadMap();
 game.init(blocks);
 game.init(players);
+game.init(portals);
+
+const ground = new THREE.Mesh(
+	new THREE.BoxGeometry(200, 1, 200),
+	new THREE.MeshStandardMaterial({ color: 0xFFFFFF })
+);
+ground.position.set(0, -18, 0);
+scene.add(ground);
 
 function animate () {
 
