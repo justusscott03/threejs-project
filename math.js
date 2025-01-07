@@ -116,4 +116,34 @@ function rect (x, y, w, h) {
     ctx.fillRect(x, y, w, h);
 }
 
-export { color, fill, stroke, background, textAlign, text, rect };
+function arc (x, y, w, h, start, stop) {
+    if (w < 0) w = 0;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(1, h / 2);
+
+    ctx.beginPath();
+    ctx.arc(0, 0, w / 2, start, stop * 180 / Math.PI);
+    ctx.fill();
+    
+    ctx.restore();
+}
+
+function ellipse (x, y, w, h) {
+    arc(x, y, w, h, 0, 360);
+}
+
+function angle (theta) {
+    return theta * Math.PI / 180;
+}
+
+function sin (theta) {
+    return Math.sin(angle(theta));
+}
+
+function cos (theta) {
+    return Math.cos(angle(theta));
+}
+
+export { color, fill, stroke, background, textAlign, text, rect, arc, ellipse, sin, cos };
