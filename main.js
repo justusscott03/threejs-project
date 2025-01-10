@@ -1,7 +1,9 @@
 //Import everything
 import * as THREE from "three";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-//import { sin, cos } from "./math.js";
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { sin, cos } from "./math.js";
 
 /*
 let controllers = [], pControllers = [];
@@ -133,15 +135,32 @@ class Player extends Block {
 				this.vely = -this.jumpHeight;
 			}
 
-			if (keys[65]) this.velx = -this.maxSpeed;
-			if (keys[87]) this.velz = -this.maxSpeed;
-			if (keys[68]) this.velx = this.maxSpeed;
-			if (keys[83]) this.velz = this.maxSpeed;
+			// if (keys[65]) this.velx = -this.maxSpeed;
+			// if (keys[87]) this.velz = -this.maxSpeed;
+			// if (keys[68]) this.velx = this.maxSpeed;
+			// if (keys[83]) this.velz = this.maxSpeed;
 
 			// if (keys[65] || keys[87] || keys[68] || keys[83]) {
 			// 	this.velx = cos(camera.rotation.y);
 			// 	this.velz = sin(camera.rotation.y);
 			// }
+
+			if (keys[65]) {
+				this.velx = -sin(camera.rotation.y + 90);
+				this.velz = cos(camera.rotation.y + 90);
+			}
+			if (keys[87]) {
+				this.velx = -sin(camera.rotation.y);
+				this.velz = -cos(camera.rotation.y);
+			}
+			if (keys[68]) {
+				this.velx = -sin(camera.rotation.y - 90);
+				this.velz = cos(camera.rotation.y - 90);
+			}
+			if (keys[83]) {
+				this.velx = -sin(camera.rotation.y);
+				this.velz = cos(camera.rotation.y);
+			}
 
 			if (!keys[65] && !keys[68])	this.velx = 0;
 			if (!keys[87] && !keys[83])	this.velz = 0;
@@ -238,10 +257,10 @@ players.apply = function (blocks) {
 	}
 };
 
-let fadeScreen = document.createElement("div");
-fadeScreen.style = "position: absolute; left: 0px; top: 0px; background-color: rgb(255, 255, 255); width: 100%; height: 100%; opacity: 0;"
-fadeScreen.setAttribute("id", "level-trans");
-document.body.appendChild(fadeScreen);
+// let fadeScreen = document.createElement("div");
+// fadeScreen.style = "position: absolute; left: 0px; top: 0px; background-color: rgb(255, 255, 255); width: 100%; height: 100%; opacity: 0;"
+// fadeScreen.setAttribute("id", "level-trans");
+// document.body.appendChild(fadeScreen);
 
 let fade = 0;
 class Portal extends Block {
@@ -253,20 +272,20 @@ class Portal extends Block {
 	}
 
 	update (players) {
-		let screen = document.getElementById("level-trans");
+		//let screen = document.getElementById("level-trans");
 		for (let i = 0; i < players.length; i++) {
 			if (collide(this, players[i]) && !this.complete) {
-				screen.style.backgroundColor = "rgb(255, 255, 255);";
-				fade += 1;
+				//screen.style.backgroundColor = "rgb(255, 255, 255);";
+				fade += 0.05;
 			}
-			if (fade >= 0 && !collide(this, players[i]) && !this.complete) {
-				fade -= 1;
-			}
-			if (fade > 100) {
-				this.complete = true;
+			else if (fade > 0 && !collide(this, players[i]) && !this.complete) {
+				fade -= 0.05;
 			}
 		}
-		screen.style.opacity = fade;
+		if (fade > 1) {
+			this.complete = true;
+		}
+		//screen.style.opacity = fade;
 	}
 
 }
@@ -387,12 +406,10 @@ class Game {
 	}
 
 	apply () {
-		// camera.position.x = players[0].x;
-		// camera.position.y = players[0].y + 4;
-		// camera.position.z = players[0].z + 5;
-
 		camera.lookAt(new THREE.Vector3(players[0].x, players[0].y, players[0].z));
-		
+		camera.updateProjectionMatrix();
+		controls.target = new THREE.Vector3(players[0].x, players[0].y, players[0].z);
+
 		players.apply(blocks);
 		portals.apply(players);
 
