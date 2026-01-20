@@ -25,6 +25,7 @@ function checkControllers () {
 //Scene and camera
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const minimapCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
 
 //Direction light
 const light = new THREE.DirectionalLight(0xFFFFFF, 3);
@@ -51,13 +52,13 @@ controls.mouseButtons = {
 
 //Textures
 const textureLoader = new THREE.TextureLoader();
-const dirt = textureLoader.load("dirt.jpg");
-const stone = textureLoader.load("stone.jpg");
-const grassSide = textureLoader.load("grass-side.jpg");
-const grassTop = textureLoader.load("grass-top.jpg");
-const TNTSide = textureLoader.load("tnt-side.jpg");
-const TNTTop = textureLoader.load("tnt-top.jpg");
-const oakPlanks = textureLoader.load("oak-planks.jpg");
+const dirt = textureLoader.load("./textures/dirt.jpg");
+const stone = textureLoader.load("./textures/stone.jpg");
+const grassSide = textureLoader.load("./textures/grass-side.jpg");
+const grassTop = textureLoader.load("./textures/grass-top.jpg");
+const TNTSide = textureLoader.load("./textures/tnt-side.jpg");
+const TNTTop = textureLoader.load("./textures/tnt-top.jpg");
+const oakPlanks = textureLoader.load("./textures/oak-planks.jpg");
 
 var keys = [];
 window.addEventListener("keydown", (e) => {
@@ -86,9 +87,9 @@ class Block {
 	}
 
 	init () {
-		this.geometry = new THREE.BoxGeometry(this.w, this.h, this.d);
-		this.material = this.m;
-		this.cube = new THREE.Mesh(this.geometry, this.material);
+		const geometry = new THREE.BoxGeometry(this.w, this.h, this.d);
+		const material = this.m;
+		this.cube = new THREE.Mesh(geometry, material);
 		this.cube.position.set(this.x, this.y, this.z);
 		scene.add(this.cube);
 	}
